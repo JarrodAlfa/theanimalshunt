@@ -1,12 +1,12 @@
 import pygame, random
 
 class Enemy:
-    def __init__(self, image, scale, score, window_width, window_height, flip_direction):
+    def __init__(self, image, scale, score, window_width, window_height, flip_direction, player):
         width, height = image.get_width(), image.get_height()
         self.image = pygame.transform.scale(image, (int(width*scale), int(height*scale)))
         self.rect = self.image.get_frect()
         self.mask = pygame.mask.from_surface(self.image)
-        self.rect.center = random.randint(window_width//2 - 250, window_width//2 + 250), window_height + 200
+        self.rect.center = random.randint(window_width//2 - 150, window_width//2 + 150), window_height + 200
 
         self.score = score
         self.alive = True
@@ -14,6 +14,7 @@ class Enemy:
         self.speedx = random.randint(-350, 350)
         self.inframe = False
         self.flip_direction = flip_direction
+        self.player = player
 
         self.lastdeath = 0
         self.respawn_cooldown = random.randint(5, 8) * 1000
@@ -29,8 +30,10 @@ class Enemy:
                 self.inframe = True
             if self.inframe:
                 self.movement(screen_width, screen_height)
-            if self.rect.collidepoint(pygame.mouse.get_pos()):
-                if pygame.mouse.get_just_pressed()[0]:
+            if self.rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_just_pressed()[0]:
+                if self.player.ammo > 0:
+                    self.player.ammo -= 1
+                    screen.fill((255, 255, 255))
                     self.lastdeath = now
                     self.alive = False
         else:
@@ -39,7 +42,7 @@ class Enemy:
 
 
     def respawn(self, window_width, window_height):
-        self.rect.center = random.randint(window_width//2 - 250, window_width//2 + 250), window_height + 200
+        self.rect.center = random.randint(window_width//2 - 150, window_width//2 + 150), window_height + 200
         self.speedy = random.randint(200, 350)
         self.speedx = random.randint(-350, 350)
         self.inframe = False

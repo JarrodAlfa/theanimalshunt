@@ -29,13 +29,14 @@ ptero_img = pygame.image.load('ptero.png').convert_alpha()
 eagle_img = pygame.image.load('eagle.png').convert_alpha()
 # player
 crosshair_img = pygame.image.load('crosshair.png').convert_alpha()
+sniper_img = pygame.image.load('sniper.png').convert_alpha()
 
+#player
+player = player.Player(crosshair_img, 0.1, sniper_img, 0.3, 5)
 # create enemy types
-bat_enemy = enemy.Enemy(bat_img, 0.2, game_score, window_width, window_height, 'right')
-ptero_enemy = enemy.Enemy(ptero_img, 0.2, game_score, window_width, window_height, 'right')
-eagle_enemy = enemy.Enemy(eagle_img, 0.15, game_score, window_width, window_height, 'left')
-# create player
-player = player.Player(crosshair_img, 0.1)
+bat_enemy = enemy.Enemy(bat_img, 0.2, game_score, window_width, window_height, 'right', player)
+ptero_enemy = enemy.Enemy(ptero_img, 0.2, game_score, window_width, window_height, 'right', player)
+eagle_enemy = enemy.Enemy(eagle_img, 0.15, game_score, window_width, window_height, 'left', player)
 
 while True:
     screen.blit(level_1)
@@ -50,7 +51,7 @@ while True:
     eagle_enemy.update(dt,screen, window_width, window_height)
     game_score.draw(screen, window_height, window_width)
 
-    player.update(screen)
+    player.update(screen, window_width, window_height)
 
     pygame.display.flip()
 
