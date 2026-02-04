@@ -15,15 +15,37 @@ class Enemy:
         self.inframe = False
         self.flip_direction = flip_direction
 
+        self.lastdeath = 0
+        self.respawn_cooldown = random.randint(5, 8) * 1000
+
     def update(self, dt, screen, screen_width, screen_height):
+        now = pygame.time.get_ticks()
         screen_rect = screen.get_frect()
-        self.spawn(screen)
-        self.rect.y -= self.speedy * dt
-        self.rect.x += self.speedx * dt
-        if screen_rect.contains(self.rect):
-            self.inframe = True
-        if self.inframe:
-            self.movement(screen_width, screen_height)
+        if self.alive:
+            self.spawn(screen)
+            self.rect.y -= self.speedy * dt
+            self.rect.x += self.speedx * dt
+            if screen_rect.contains(self.rect):
+                self.inframe = True
+            if self.inframe:
+                self.movement(screen_width, screen_height)
+            if self.rect.collidepoint(pygame.mouse.get_pos()):
+                if pygame.mouse.get_just_pressed()[0]:
+                    self.lastdeath = now
+                    self.alive = False
+        else:
+            if now - self.lastdeath > self.respawn_cooldown:
+                self.respawn(screen_width, screen_height)
+
+
+    def respawn(self, window_width, window_height):
+        self.rect.center = random.randint(window_width//2 - 250, window_width//2 + 250), window_height + 200
+        self.speedy = random.randint(200, 350)
+        self.speedx = random.randint(-350, 350)
+        self.inframe = False
+        self.alive = True
+
+
     def spawn(self, screen):
         screen.blit(self.image, self.rect)
 
