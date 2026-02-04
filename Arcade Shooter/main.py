@@ -7,6 +7,7 @@ window_width, window_height = 1280, 720
 screen = pygame.display.set_mode((window_width, window_height))
 clock = pygame.time.Clock()
 fps = 60
+dt = 0
 pygame.display.set_caption('Arcade Shooter')
 pygame.display.set_icon(pygame.image.load('logo.png').convert_alpha())
 
@@ -19,20 +20,24 @@ tiger_img = pygame.image.load('tiger.png').convert_alpha()
 gorilla_img = pygame.image.load('gorilla.png').convert_alpha()
 alligator_img = pygame.image.load('alligator.png').convert_alpha()
 rex_img = pygame.image.load('rex.png').convert_alpha()
+ptero_img = pygame.image.load('ptero.png').convert_alpha()
+eagle_img = pygame.image.load('eagle.png').convert_alpha()
 # player
 crosshair_img = pygame.image.load('crosshair.png').convert_alpha()
 
 # create enemy types
-wolf_enemy = enemy.Enemy(100, 100, wolf_img, 0.2)
-bat_enemy = enemy.Enemy(300, 500, bat_img, 0.2)
-bear_enemy = enemy.Enemy(700, 300, bear_img, 0.1)
-tiger_enemy = enemy.Enemy(800, 600, tiger_img, 0.4)
-gorilla_enemy = enemy.Enemy(900, 400, gorilla_img, 0.4)
-alligator_enemy = enemy.Enemy(500, 100, alligator_img, 0.2)
-rex_enemy = enemy.Enemy(1000, 150, rex_img, 0.2)
+# wolf_enemy = enemy.Enemy(100, 100, wolf_img, 0.2)
+bat_enemy = enemy.Enemy(-100, 100, bat_img, 0.2, "flyer_right")
+# bear_enemy = enemy.Enemy(700, 300, bear_img, 0.1)
+# tiger_enemy = enemy.Enemy(800, 600, tiger_img, 0.4)
+# gorilla_enemy = enemy.Enemy(900, 400, gorilla_img, 0.4)
+# alligator_enemy = enemy.Enemy(500, 100, alligator_img, 0.2)
+# rex_enemy = enemy.Enemy(1000, 150, rex_img, 0.2)
+ptero_enemy = enemy.Enemy(-100, 300, ptero_img, 0.2, "flyer_right")
+eagle_enemy = enemy.Enemy(1380, 200, eagle_img, 0.15, "flyer_left")
 
 # create player
-player = player.Player(crosshair_img, 0.5)
+player = player.Player(crosshair_img, 0.1)
 
 while True:
     screen.fill((24, 24, 24))
@@ -42,17 +47,18 @@ while True:
             pygame.quit()
             sys.exit()
     # draw the game
-    wolf_enemy.draw(screen)
-    bat_enemy.draw(screen)
-    bear_enemy.draw(screen)
-    tiger_enemy.draw(screen)
-    gorilla_enemy.draw(screen)
-    alligator_enemy.draw(screen)
-    rex_enemy.draw(screen)
+    # wolf_enemy.update(screen)
+    bat_enemy.update(screen, dt, window_width)
+    # bear_enemy.update(screen)
+    # tiger_enemy.update(screen)
+    # gorilla_enemy.update(screen)
+    # alligator_enemy.update(screen)
+    # rex_enemy.update(screen)
+    ptero_enemy.update(screen, dt, window_width)
+    eagle_enemy.update(screen, dt, window_width)
 
-    #TODO player
     player.update(screen)
 
     pygame.display.flip()
 
-    clock.tick(fps)
+    dt = clock.tick(fps) / 1000
