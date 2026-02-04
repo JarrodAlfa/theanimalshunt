@@ -33,6 +33,7 @@ sniper_img = pygame.image.load('sniper.png').convert_alpha()
 
 #player
 player = player.Player(crosshair_img, 0.1, sniper_img, 0.3, 5)
+
 # create enemy types
 bat_enemy = enemy.Enemy(bat_img, 0.2, game_score, window_width, window_height, 'right', player)
 ptero_enemy = enemy.Enemy(ptero_img, 0.2, game_score, window_width, window_height, 'right', player)

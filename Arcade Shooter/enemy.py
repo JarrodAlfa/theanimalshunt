@@ -1,5 +1,4 @@
 import pygame, random
-
 class Enemy:
     def __init__(self, image, scale, score, window_width, window_height, flip_direction, player):
         width, height = image.get_width(), image.get_height()
@@ -30,10 +29,8 @@ class Enemy:
                 self.inframe = True
             if self.inframe:
                 self.movement(screen_width, screen_height)
-            if self.rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_just_pressed()[0]:
-                if self.player.ammo > 0:
-                    self.player.ammo -= 1
-                    screen.fill((255, 255, 255))
+            if pygame.mouse.get_just_pressed()[0]:
+                if self.rect.collidepoint(pygame.mouse.get_pos()) and self.player.ammo > 0:
                     self.lastdeath = now
                     self.alive = False
         else:

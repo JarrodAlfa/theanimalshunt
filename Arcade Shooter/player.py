@@ -16,3 +16,9 @@ class Player:
         mx, my = pygame.mouse.get_pos()
         self.rect.center = mx, my
         self.sniper_rect.center = screen_width - 75, screen_height -75
+        self.shoot(screen)
+
+    def shoot(self, screen):
+        if pygame.mouse.get_just_pressed()[0] and self.ammo > 0:
+            self.ammo -= 1
+            screen.fill('White')
