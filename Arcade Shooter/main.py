@@ -46,6 +46,9 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 7:
+                player.reload()
     # draw the game
     bat_enemy.update(dt,screen, window_width, window_height)
     ptero_enemy.update(dt,screen, window_width, window_height)

@@ -25,6 +25,9 @@ class Enemy:
             self.spawn(screen)
             self.rect.y -= self.speedy * dt
             self.rect.x += self.speedx * dt
+            if not self.inframe:
+                self.lefty(screen_width)
+                self.righty()
             if screen_rect.contains(self.rect):
                 self.inframe = True
             if self.inframe:
@@ -50,17 +53,22 @@ class Enemy:
         screen.blit(self.image, self.rect)
 
     def movement(self, screen_width, screen_height):
+        self.lefty(screen_width)
+        self.righty()
+        if self.rect.top < 0:
+            self.speedy = -self.speedy
+        if self.rect.bottom > screen_height:
+            self.speedy = -self.speedy
+
+    def lefty(self, screen_width):
         if self.rect.right > screen_width:
             self.speedx = -self.speedx
             if self.flip_direction == "right":
                 self.image = pygame.transform.flip(self.image, True, False)
                 self.flip_direction = "left"
+    def righty(self):
         if self.rect.left < 0:
             self.speedx = -self.speedx
             if self.flip_direction == "left":
                 self.image = pygame.transform.flip(self.image, True, False)
                 self.flip_direction = "right"
-        if self.rect.top < 0:
-            self.speedy = -self.speedy
-        if self.rect.bottom > screen_height:
-            self.speedy = -self.speedy

@@ -22,3 +22,7 @@ class Player:
         if pygame.mouse.get_just_pressed()[0] and self.ammo > 0:
             self.ammo -= 1
             screen.fill('White')
+
+    def reload(self):
+        if self.ammo < self.max_ammo:
+            self.ammo = self.max_ammo
