@@ -11,7 +11,7 @@ clock = pygame.time.Clock()
 fps = 60
 dt = 0
 game_score = score.Score()
-game_state = 'game'
+game_state = 'start_screen'
 
 pygame.display.set_caption('Arcade Shooter')
 pygame.display.set_icon(pygame.image.load('logo.png').convert_alpha())
@@ -19,8 +19,15 @@ pygame.display.set_icon(pygame.image.load('logo.png').convert_alpha())
 # import images
 start_screen = pygame.image.load('startscreen.jpg').convert()
 start_screen = pygame.transform.scale(start_screen, (window_width, window_height))
-quit_button = button.Button(100, 200, "QUIT")
-
+quit_button = button.Button(380, window_height-100, "QUIT", 100)
+credits_button = button.Button(380, window_height-300, "CREDITS", 100)
+start_button = button.Button(380, window_height-500, "START", 100)
+credit_text1 = button.Button(380, window_height-600, "credits:", 30)
+credit_text2 = button.Button(380, window_height-500, "Mohammad, music, sfx, level design",30)
+credit_text3 = button.Button(380, window_height-400, "Safa, Graphic design and level design",30)
+credit_text4 = button.Button(380, window_height-300, "Jarrod, programming and level design", 30)
+credit_text5 = button.Button(380, window_height-200, "published by The Animals",30)
+credits_back = button.Button(100, 50, "BACK", 50)
 #levels
 level_1 = pygame.image.load('level1.jpg').convert()
 level_1 = pygame.transform.scale(level_1, (window_width, window_height))
@@ -64,8 +71,27 @@ while True:
     # draw the game
     if game_state == 'start_screen':
         screen.blit(start_screen)
-        quit_button.draw(screen)
+        if quit_button.draw(screen):
+            pygame.quit()
+            sys.exit()
+        if credits_button.draw(screen):
+            game_state = "credit_screen"
+        if start_button.draw(screen):
+            game_state = 'game'
         pygame.display.flip()
+
+    if game_state == 'credit_screen':
+        screen.blit(start_screen)
+        credit_text1.draw_nouse(screen)
+        credit_text2.draw_nouse(screen)
+        credit_text3.draw_nouse(screen)
+        credit_text4.draw_nouse(screen)
+        credit_text5.draw_nouse(screen)
+        if credits_back.draw(screen):
+            game_state = 'start_screen'
+        pygame.display.flip()
+
+
     if game_state == 'game':
         screen.blit(level_1)
         #draw all enemies
