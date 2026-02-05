@@ -1,7 +1,8 @@
 import pygame
 pygame.mixer.init()
+pygame.font.init()
 class Player:
-    def __init__(self, crosshair_img, scale, sniper_img, sniper_scale, max_ammo, sniper_sound):
+    def __init__(self, crosshair_img, scale, sniper_img, sniper_scale, max_ammo, sniper_sound, reload_sound):
         cwidth, cheight = crosshair_img.get_width(), crosshair_img.get_height()
         swidth, sheight = sniper_img.get_width(), sniper_img.get_height()
         self.image = pygame.transform.scale(crosshair_img, (int(cwidth * scale), int(cheight * scale)))
@@ -11,20 +12,30 @@ class Player:
         self.max_ammo = max_ammo
         self.ammo = max_ammo
         self.sniper_sound = sniper_sound
+        self.reload_sound = reload_sound
         self.lastshot = pygame.time.get_ticks()
         self.shootcooldown = 300
         self.reload_start_time = 0
-        self.reload_time = 2000
+        self.reload_time = 1000
         self.reloading = False
+        self.font = pygame.font.SysFont('Arial', 30)
+        self.text_surf = self.font.render('Ammo: ' + str(int(self.ammo)), True, (255, 255, 255))
+        self.text_rect = self.text_surf.get_frect()
+
+
 
     def update(self, screen, screen_width, screen_height):
         now = pygame.time.get_ticks()
         if self.reloading:
             if now - self.reload_start_time >= self.reload_time:
                 self.ammo = self.max_ammo
+                self.text_surf = self.font.render('Ammo: ' + str(int(self.ammo)), True, (255, 255, 255))
+                self.text_rect = self.text_surf.get_frect()
                 self.reloading = False
         screen.blit(self.image, self.rect)
         screen.blit(self.sniper_image, self.sniper_rect)
+        self.text_rect.bottomright = screen_width - 5, screen_height - 30
+        screen.blit(self.text_surf, self.text_rect)
         mx, my = pygame.mouse.get_pos()
         self.rect.center = mx, my
         self.sniper_rect.center = screen_width - 75, screen_height -75
@@ -38,10 +49,13 @@ class Player:
             if now - self.lastshot > self.shootcooldown:
                 self.sniper_sound.play()
                 self.ammo -= 1
+                self.text_surf = self.font.render('Ammo: ' + str(int(self.ammo)), True, (255, 255, 255))
+                self.text_rect = self.text_surf.get_frect()
                 self.lastshot = now
                 screen.fill('White')
 
     def reload(self):
         if self.ammo < self.max_ammo and not self.reloading:
+            self.reload_sound.play()
             self.reloading = True
             self.reload_start_time = pygame.time.get_ticks()

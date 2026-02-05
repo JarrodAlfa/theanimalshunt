@@ -4,7 +4,6 @@ class Enemy:
         width, height = image.get_width(), image.get_height()
         self.image = pygame.transform.scale(image, (int(width*scale), int(height*scale)))
         self.rect = self.image.get_frect()
-        self.mask = pygame.mask.from_surface(self.image)
 
         self.score = score
         self.alive = True
@@ -17,21 +16,26 @@ class Enemy:
         self.type = type
         self.walker_side = ""
         self.walker_speed = random.randint(100, 250)
+        self.randomy = window_height - random.randint(1, 300)
+        if self.randomy + self.rect.height // 2 > window_height:
+            self.randomy = window_height - self.rect.height // 2
 
         if self.type == "flyer":
             self.rect.center = random.randint(window_width // 2 - 150, window_width // 2 + 150), window_height + 200
         elif self.type == "walker":
             side = random.choice(["left", "right"])
-            pos_y = window_height - 70
+            self.rect.bottom = window_height
+            # reset image freshly from input
+            width, height = self.image.get_width(), self.image.get_height()
+            self.image = pygame.transform.scale(self.image, (width, height))  # reset to current scale
             if side == "left":
-                x_pos = -150
+                self.rect.center = -150, self.randomy
                 self.walker_side = "left"
-                self.flip_direction = 'right'
+                self.face("right")
             else:
-                x_pos = window_width + 150
+                self.rect.center = window_width + 150, self.randomy
                 self.walker_side = "right"
-                self.flip_direction = 'left'
-            self.rect.center = x_pos, pos_y
+                self.face("left")
 
         self.lastdeath = 0
         self.respawn_cooldown = random.randint(5, 8) * 1000
@@ -47,15 +51,21 @@ class Enemy:
         if self.type == "flyer":
             self.rect.center = random.randint(window_width // 2 - 150, window_width // 2 + 150), window_height + 200
         elif self.type == "walker":
+            self.randomy = window_height - random.randint(1, 300)
+            if self.randomy + self.rect.height // 2 > window_height:
+                self.randomy = window_height - self.rect.height // 2
             side = random.choice(["left", "right"])
-            pos_y = window_height - 70
+            self.rect.bottom = window_height
+            width, height = self.image.get_width(), self.image.get_height()
+            self.image = pygame.transform.scale(self.image, (width, height))  # reset to current scale
             if side == "left":
-                x_pos = -150
+                self.rect.center = -150, self.randomy
                 self.walker_side = "left"
+                self.face("right")
             else:
-                x_pos = window_width + 150
+                self.rect.center = window_width + 150, self.randomy
                 self.walker_side = "right"
-            self.rect.center = x_pos, pos_y
+                self.face("left")
         self.speedy = random.randint(200, 350)
         self.speedx = random.randint(-350, 350)
         self.inframe = False
@@ -77,21 +87,19 @@ class Enemy:
         if self.rect.right > screen_width:
             if self.type == "flyer":
                 self.speedx = -self.speedx
-            if self.flip_direction == "right":
-                self.image = pygame.transform.flip(self.image, True, False)
-                self.flip_direction = "left"
+            self.face("left")
+
     def righty(self):
         if self.rect.left < 0:
             if self.type == "flyer":
                 self.speedx = -self.speedx
-            if self.flip_direction == "left":
-                self.image = pygame.transform.flip(self.image, True, False)
-                self.flip_direction = "right"
+            self.face("right")
 
     def walker_logic(self, dt, screen, screen_width, screen_height):
         now = pygame.time.get_ticks()
         screen_rect = screen.get_frect()
         if self.alive:
+            self.face("right" if self.walker_side == "left" else "left")
             self.spawn(screen)
             if self.walker_side == "left":
                 self.rect.x += self.walker_speed * dt
@@ -116,6 +124,7 @@ class Enemy:
         now = pygame.time.get_ticks()
         screen_rect = screen.get_frect()
         if self.alive:
+            self.face("right" if self.speedx > 0 else "left")
             self.spawn(screen)
             self.rect.y -= self.speedy * dt
             self.rect.x += self.speedx * dt
@@ -141,3 +150,8 @@ class Enemy:
                         self.lastshot = now
                         self.score.add_score(random.choice([1000, 1250, 1500, 2000]))
                         self.alive = False
+
+    def face(self, direction):
+        if self.flip_direction != direction:
+            self.image = pygame.transform.flip(self.image, True, False)
+            self.flip_direction = direction
