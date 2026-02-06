@@ -7,6 +7,9 @@ class Enemy:
 
         self.score = score
         self.alive = True
+        self.spawn_delay = random.randint(5,10)
+        self.spawn_time = pygame.time.get_ticks() / 1000
+        self.active = False
         self.speedy = random.randint(200, 350)
         self.speedx = random.randint(-350, 350)
         self.inframe = False
@@ -25,9 +28,8 @@ class Enemy:
         elif self.type == "walker":
             side = random.choice(["left", "right"])
             self.rect.bottom = window_height
-            # reset image freshly from input
             width, height = self.image.get_width(), self.image.get_height()
-            self.image = pygame.transform.scale(self.image, (width, height))  # reset to current scale
+            self.image = pygame.transform.scale(self.image, (width, height))
             if side == "left":
                 self.rect.center = -150, self.randomy
                 self.walker_side = "left"
@@ -41,6 +43,12 @@ class Enemy:
         self.respawn_cooldown = random.randint(5, 8) * 1000
 
     def update(self, dt, screen, screen_width, screen_height):
+        if not self.active:
+            if pygame.time.get_ticks() / 1000 - self.spawn_time >= self.spawn_delay:
+                self.active = True
+            else:
+                return
+
         if self.type == "flyer":
             self.flyer_logic(dt, screen, screen_width, screen_height)
         if self.type == "walker":
@@ -57,7 +65,7 @@ class Enemy:
             side = random.choice(["left", "right"])
             self.rect.bottom = window_height
             width, height = self.image.get_width(), self.image.get_height()
-            self.image = pygame.transform.scale(self.image, (width, height))  # reset to current scale
+            self.image = pygame.transform.scale(self.image, (width, height))
             if side == "left":
                 self.rect.center = -150, self.randomy
                 self.walker_side = "left"
@@ -105,6 +113,17 @@ class Enemy:
                 self.rect.x += self.walker_speed * dt
             else:
                 self.rect.x -= self.walker_speed * dt
+            if not self.inframe:
+                if self.rect.left >= 0 and self.rect.right <= screen_width:
+                    self.inframe = True
+            else:
+                # only clamp after inframe is True
+                if self.rect.left < 0:
+                    self.rect.left = 0
+                    self.walker_side = "left"
+                elif self.rect.right > screen_width:
+                    self.rect.right = screen_width
+                    self.walker_side = "right"
             if screen_rect.contains(self.rect):
                 self.inframe = True
             if self.inframe:
@@ -148,7 +167,10 @@ class Enemy:
                     if self.rect.collidepoint(pygame.mouse.get_pos()) and self.player.ammo > 0:
                         self.lastdeath = now
                         self.lastshot = now
-                        self.score.add_score(random.choice([1000, 1250, 1500, 2000]))
+                        if self.type == "flyer":
+                            self.score.add_score(random.choice([2000, 2500, 3000, 4000]))
+                        else:
+                            self.score.add_score(random.choice([1000, 1250, 1500, 2000]))
                         self.alive = False
 
     def face(self, direction):

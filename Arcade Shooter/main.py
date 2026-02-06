@@ -53,14 +53,19 @@ reload_sound.set_volume(0.5)
 player = player.Player(crosshair_img, 0.1, sniper_img, 0.3, 5, sniper_sound, reload_sound)
 
 # create enemy types
-bat_enemy = enemy.Enemy(bat_img, 0.2, game_score, window_width, window_height, 'right', player, "flyer")
+bat_enemy = enemy.Enemy(bat_img, 0.175, game_score, window_width, window_height, 'right', player, "flyer")
 ptero_enemy = enemy.Enemy(ptero_img, 0.2, game_score, window_width, window_height, 'right', player, "flyer")
-eagle_enemy = enemy.Enemy(eagle_img, 0.15, game_score, window_width, window_height, 'left', player, "flyer")
+eagle_enemy = enemy.Enemy(eagle_img, 0.1, game_score, window_width, window_height, 'left', player, "flyer")
 wolf_enemy = enemy.Enemy(wolf_img, 0.15, game_score, window_width, window_height, 'left', player, "walker")
 gorilla_enemy = enemy.Enemy(gorilla_img, 0.5, game_score, window_width, window_height, 'right', player, "walker")
+alligator_enemy = enemy.Enemy(alligator_img, 0.17, game_score, window_width, window_height, 'left', player, "walker")
+tiger_enemy = enemy.Enemy(tiger_img, 0.5, game_score, window_width, window_height, 'right', player, "walker")
+bear_enemy = enemy.Enemy(bear_img, 0.1, game_score, window_width, window_height, 'left', player, "walker")
+rex_enemy = enemy.Enemy(rex_img, 0.25, game_score, window_width, window_height, 'left', player, "walker")
 
 while True:
     # event loop
+    dt = clock.tick(fps) / 1000
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -78,6 +83,7 @@ while True:
             game_state = "credit_screen"
         if start_button.draw(screen):
             game_state = 'game'
+            pygame.event.clear(pygame.MOUSEBUTTONDOWN)
         pygame.display.flip()
 
     if game_state == 'credit_screen':
@@ -95,15 +101,14 @@ while True:
     if game_state == 'game':
         screen.blit(level_1)
         #draw all enemies
-        bat_enemy.update(dt,screen, window_width, window_height)
-        ptero_enemy.update(dt,screen, window_width, window_height)
-        eagle_enemy.update(dt,screen, window_width, window_height)
-        wolf_enemy.update(dt,screen, window_width, window_height)
-        gorilla_enemy.update(dt,screen, window_width, window_height)
+        enemies = [bat_enemy, ptero_enemy, eagle_enemy, wolf_enemy, gorilla_enemy, alligator_enemy, tiger_enemy,
+                   bear_enemy, rex_enemy]
+
+        for e in enemies:
+            e.update(dt, screen, window_width, window_height)
 
         #draw gui
         player.update(screen, window_width, window_height)
         game_score.draw(screen, window_height, window_width)
 
         pygame.display.flip()
-        dt = clock.tick(fps) / 1000
