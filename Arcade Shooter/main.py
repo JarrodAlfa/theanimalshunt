@@ -32,6 +32,7 @@ credit_text3 = button.Button(380, window_height-400, "Safa, Graphic design and l
 credit_text4 = button.Button(380, window_height-300, "Jarrod, programming and level design", 30)
 credit_text5 = button.Button(380, window_height-200, "published by The Animals",30)
 credits_back = button.Button(100, 50, "BACK", 50)
+win_text = button.Button(380, window_height-300, "YOU WIN", 100)
 #levels
 level_1 = pygame.image.load('level1.jpg').convert()
 level_1 = pygame.transform.scale(level_1, (window_width, window_height))
@@ -121,7 +122,7 @@ while True:
             game_score.draw(screen, window_height, window_width)
 
             pygame.display.flip()
-    elif score >= 50000:
+    elif score >= 50000 and score <= 100000:
         screen.blit(level_2)
         enemies = [bat_enemy, eagle_enemy, wolf_enemy,
                        bear_enemy, woolly_rhino_enemy, argy_enemy]
@@ -131,3 +132,13 @@ while True:
         player.update(screen, window_width, window_height)
         game_score.draw(screen, window_height, window_width)
         pygame.display.flip()
+
+    elif score >= 100000:
+        game_state = 'end_screen'
+        if game_state == 'end_screen':
+            screen.blit(start_screen)
+            win_text.draw_nouse(screen)
+            if quit_button.draw(screen):
+                pygame.quit()
+                sys.exit()
+            pygame.display.flip()
