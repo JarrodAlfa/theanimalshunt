@@ -16,6 +16,10 @@ game_state = 'start_screen'
 pygame.display.set_caption('Arcade Shooter')
 pygame.display.set_icon(pygame.image.load('logo.png').convert_alpha())
 
+music = pygame.mixer.Sound('lassolady.ogg')
+music.set_volume(0.3)
+music.play(loops=-1)
+
 # import images
 start_screen = pygame.image.load('startscreen.jpg').convert()
 start_screen = pygame.transform.scale(start_screen, (window_width, window_height))
@@ -31,7 +35,8 @@ credits_back = button.Button(100, 50, "BACK", 50)
 #levels
 level_1 = pygame.image.load('level1.jpg').convert()
 level_1 = pygame.transform.scale(level_1, (window_width, window_height))
-
+level_2 = pygame.image.load('sky.png').convert()
+level_2 = pygame.transform.scale(level_2, (window_width, window_height))
 # animals
 wolf_img = pygame.image.load('wolf.png').convert_alpha()
 bat_img = pygame.image.load('bat.png').convert_alpha()
@@ -42,6 +47,8 @@ alligator_img = pygame.image.load('alligator.png').convert_alpha()
 rex_img = pygame.image.load('rex.png').convert_alpha()
 ptero_img = pygame.image.load('ptero.png').convert_alpha()
 eagle_img = pygame.image.load('eagle.png').convert_alpha()
+woolly_rhino = pygame.image.load('woollyrhino.png').convert_alpha()
+argy_img = pygame.image.load('argy.png').convert_alpha()
 
 # player
 crosshair_img = pygame.image.load('crosshair.png').convert_alpha()
@@ -62,12 +69,14 @@ alligator_enemy = enemy.Enemy(alligator_img, 0.17, game_score, window_width, win
 tiger_enemy = enemy.Enemy(tiger_img, 0.5, game_score, window_width, window_height, 'right', player, "walker")
 bear_enemy = enemy.Enemy(bear_img, 0.1, game_score, window_width, window_height, 'left', player, "walker")
 rex_enemy = enemy.Enemy(rex_img, 0.25, game_score, window_width, window_height, 'left', player, "walker")
+woolly_rhino_enemy = enemy.Enemy(woolly_rhino, 0.5, game_score, window_width, window_height, 'left', player, "walker")
+argy_enemy = enemy.Enemy(argy_img, 0.2, game_score, window_width, window_height, 'left', player, "flyer")
 
 while True:
     # event loop
     dt = clock.tick(fps) / 1000
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if event.type == pygame.QUIT or pygame.key.get_just_pressed()[pygame.K_ESCAPE]:
             pygame.quit()
             sys.exit()
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -97,18 +106,28 @@ while True:
             game_state = 'start_screen'
         pygame.display.flip()
 
+    score = game_score.get_score()
+    if score <= 50000:
+        if game_state == 'game':
+            screen.blit(level_1)
+            #draw all enemies
+            enemies = [bat_enemy, ptero_enemy, gorilla_enemy, alligator_enemy, tiger_enemy, rex_enemy]
 
-    if game_state == 'game':
-        screen.blit(level_1)
-        #draw all enemies
-        enemies = [bat_enemy, ptero_enemy, eagle_enemy, wolf_enemy, gorilla_enemy, alligator_enemy, tiger_enemy,
-                   bear_enemy, rex_enemy]
+            for e in enemies:
+                e.update(dt, screen, window_width, window_height)
 
+            #draw gui
+            player.update(screen, window_width, window_height)
+            game_score.draw(screen, window_height, window_width)
+
+            pygame.display.flip()
+    elif score >= 50000:
+        screen.blit(level_2)
+        enemies = [bat_enemy, eagle_enemy, wolf_enemy,
+                       bear_enemy, woolly_rhino_enemy, argy_enemy]
         for e in enemies:
             e.update(dt, screen, window_width, window_height)
 
-        #draw gui
         player.update(screen, window_width, window_height)
         game_score.draw(screen, window_height, window_width)
-
         pygame.display.flip()

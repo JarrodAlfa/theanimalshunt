@@ -15,3 +15,6 @@ class Score:
         self.score += score
         self.text_surf = self.font.render('Score: ' + str(int(self.score)),True,(255, 255, 255))
         self.text_rect = self.text_surf.get_frect()
+
+    def get_score(self):
+        return self.score
